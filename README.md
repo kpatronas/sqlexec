@@ -37,7 +37,7 @@ sqlexec.py -d <database_config_file> -q <query_file> -e
 * -c: will zip the csv export
 
 ## Database configuration file example
-
+```
 engine:mysqldb            <-- or any other sqlalchemy database engine
 db_user:username
 db_pass:password
@@ -50,5 +50,5 @@ ssh_key: ~/.ssh/id_rsa
 ssh_user:username
 ssh_pass:
 use_tunnel:True || False
-
+```
 if use_tunnel is false then ssh parameters are optional
