@@ -12,7 +12,6 @@ from multiprocessing import Process, Queue
 
 def q(db):
     try:
-        print(db)
         results = execute_query(db = db)
         if db['use_tunnel'] == 'True':
             db['db_host'] = old_db_host
