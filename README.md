@@ -37,7 +37,7 @@ sqlexec.py -d <database_config_file> -q <query_file> -e
 
 ## Database configuration file example
 
-engine:mysqldb
+engine:mysqldb            <-- or any other sqlalchemy database engine
 db_user:username
 db_pass:password
 db_name:dabatase_name
