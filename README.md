@@ -19,7 +19,8 @@ sqlexec.py -d <database_config_file> -q <query_file>
 running this will produce output on the console with the output of the executed query
 
 dbserver\database_name\executed_query.sql\4.91Sec\11-Feb-2022T14:19:42
------------------------------------------------------------
+----------------------------------------------------------------------
+
               col1          col2            col3    col4
 0          2234267  11.15.186.11         2234267  229362
 1          2234662    11.0.98.11         2234662  400830
