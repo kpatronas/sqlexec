@@ -108,6 +108,11 @@ if __name__ == '__main__':
                         default    =  False,        \
                         action     = 'store_true')  \
 
+    parser.add_argument('-i', dest = 'influxdb',    \
+                        required   = False,         \
+                        default    = False,         \
+                        action     = 'store_true')  \
+
     parser.add_argument('-c', dest = 'compress',    \
                         required   =  False,        \
                         default    =  False,        \
@@ -122,6 +127,12 @@ if __name__ == '__main__':
                         required   = False,         \
                         default    = "",            \
                         help       = "Export name", \
+                        type       = str)
+
+    parser.add_argument('-f', dest = "influxdb_conf", \
+                        required   = False,         \
+                        default    = "",            \
+                        help       = "Influxdb configuration file", \
                         type       = str)
 
     args = parser.parse_args()
@@ -225,3 +236,65 @@ if __name__ == '__main__':
         print(len(msg)*'-')
         with pd.option_context('display.max_rows', None, 'display.max_columns', None):
             print(results)
+
+    if args.influxdb == True:
+        if len(args.influxdb_conf) > 0:
+
+            influxdb_conf = args.influxdb_conf
+            with open(influxdb_conf) as f:
+                db_options = f.readlines()
+
+            from influxdb_client import InfluxDBClient, Point, WriteOptions
+            from influxdb_client.client.write_api import SYNCHRONOUS
+
+            influx_db_options = {}
+            influx_db_options['host']         = "127.0.0.1"
+            influx_db_options['port']         = '8086'
+            influx_db_options['measurement']  = ""
+            influx_db_options['database']     = ""
+            influx_db_options['ts']           = ""
+            influx_db_options['drop']         = ""
+            influx_db_options['tags']         = ""
+            influx_db_options['token']        = ""
+            influx_db_options['org']          = ""
+
+            for line in db_options:
+                line  = line.replace('\n','')
+                k,v   = line.split(':')
+                influx_db_options[k] = v
+
+            for i in ['measurement','database','tags']:
+                if influx_db_options[i] == "":
+                    print('%s cannot be null'%(i))
+                    sys.exit(1)
+
+            with open(args.influxdb_conf) as f:
+                influx_options = f.readlines()
+
+            if len(influx_db_options['drop']) > 0:
+                to_drop = influx_db_options['drop'].split(',')
+
+            if len(influx_db_options['tags']) > 0:
+                tags    = influx_db_options['tags'].split(',')
+
+            if len(influx_db_options['drop']) > 0:
+                results.drop(columns = to_drop,
+                             inplace = True)
+
+            if influx_db_options['ts'] != "":
+                results.set_index(influx_db_options['ts'],inplace = True)
+            else:
+                results['ts'] = datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ')
+                results.set_index(['ts'],inplace = True)
+
+            with InfluxDBClient(url="http://%s:%s"%(influx_db_options['host'],          \
+                                                    influx_db_options['port']),         \
+                                                    token = influx_db_options['token'], \
+                                                    org   = influx_db_options['org']) as _client:
+
+                with _client.write_api(write_options=WriteOptions(batch_size=500)) as _write_client:
+                    _write_client.write(influx_db_options['database'],                                 \
+                                        "",                                                            \
+                                        record = results,                                              \
+                                        data_frame_measurement_name = influx_db_options['measurement'],\
+                                        data_frame_tag_columns      = tags)
