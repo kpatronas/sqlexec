@@ -36,6 +36,11 @@ sqlexec.py -d <database_config_file> -q <query_file> -e
 * -t: will not print query results on screen
 * -c: will zip the csv export
 
+3. Export to influxdb
+sqlexec.py -d <database_config_file> -q <query_file> -i -f <influxdb_config_file>
+
+* -f: a text file with influxdb configuration options
+
 ## Database configuration file example
 ```
 engine:mysqldb            <-- or any other sqlalchemy database engine
