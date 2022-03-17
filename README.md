@@ -58,7 +58,7 @@ use_tunnel:True || False
 ```
 if use_tunnel is false then ssh parameters are optional
 
-## Export results to influxdb
+## Influxdb configuration file example
 ```
 host:influxdb_host
 port:influxdb_port
