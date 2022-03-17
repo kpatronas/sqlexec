@@ -52,3 +52,16 @@ ssh_pass:
 use_tunnel:True || False
 ```
 if use_tunnel is false then ssh parameters are optional
+
+## Export results to influxdb
+```
+host:influxdb_host
+port:influxdb_port
+measurement:measurement_name
+database:database_name
+ts: <-- optional, if used will be the name of the column you want to use as timestamp, must be in influxdb format
+drop: <-- optional, columns to drop.
+tags:column1,column2 <-- columns used as tags
+token: 
+org:
+```
